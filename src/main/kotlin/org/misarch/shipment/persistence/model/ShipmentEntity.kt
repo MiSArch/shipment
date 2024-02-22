@@ -11,14 +11,14 @@ import java.util.*
  *
  * @property status status of the shipment
  * @property shipmentMethodId unique identifier of the shipment method this shipment uses
- * @property addressId unique identifier of the address this shipment is sent to
+ * @property shipmentAddressId unique identifier of the address this shipment is sent to
  * @property id unique identifier of the shipment
  */
 @Table
 class ShipmentEntity(
     var status: ShipmentStatus,
     val shipmentMethodId: UUID,
-    val addressId: UUID,
+    val shipmentAddressId: UUID,
     @Id
     override val id: UUID?
 ) : BaseEntity<Shipment> {
@@ -35,7 +35,7 @@ class ShipmentEntity(
             id = id!!,
             status = status,
             shipmentMethodId = shipmentMethodId,
-            addressId = addressId
+            shipmentAddressId = shipmentAddressId
         )
     }
 

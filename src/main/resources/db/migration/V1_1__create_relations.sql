@@ -29,9 +29,9 @@ CREATE TABLE ShipmentEntity (
     id UUID PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     status VARCHAR(255) NOT NULL,
     shipmentMethodId UUID NOT NULL,
-    addressId UUID NOT NULL,
+    shipmentAddressId UUID NOT NULL,
     FOREIGN KEY (shipmentMethodId) REFERENCES ShipmentMethodEntity(id),
-    FOREIGN KEY (addressId) REFERENCES AddressEntity(id)
+    FOREIGN KEY (shipmentAddressId) REFERENCES AddressEntity(id)
 );
 
 CREATE TABLE ShipmentToOrderItemEntity (

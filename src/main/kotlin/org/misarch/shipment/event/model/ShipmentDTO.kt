@@ -20,5 +20,5 @@ data class ShipmentDTO(
     val status: ShipmentStatus,
     val orderItemIds: List<UUID>,
     val shipmentMethodId: UUID,
-    val addressId: UUID
+    val shipmentAddressId: UUID
 )

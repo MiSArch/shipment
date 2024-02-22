@@ -6,6 +6,7 @@ import com.expediagroup.graphql.generator.federation.directives.FieldSet
 import com.expediagroup.graphql.generator.federation.directives.KeyDirective
 import graphql.schema.DataFetchingEnvironment
 import org.misarch.shipment.graphql.authorizedUserOrNull
+import org.misarch.shipment.graphql.dataloader.AddressDataLoader
 import org.misarch.shipment.graphql.dataloader.ShipmentMethodDataLoader
 import org.misarch.shipment.graphql.model.connection.OrderItemConnection
 import org.misarch.shipment.graphql.model.connection.OrderItemOrder
@@ -23,7 +24,7 @@ class Shipment(
     @property:GraphQLDescription("The status of the shipment.")
     val status: ShipmentStatus,
     private val shipmentMethodId: UUID,
-    private val addressId: UUID
+    private val shipmentAddressId: UUID
 ) : Node(id) {
 
     @GraphQLDescription("The shipment method this shipment uses.")
@@ -32,6 +33,14 @@ class Shipment(
     ): CompletableFuture<ShipmentMethod> {
         return dfe.getDataLoader<UUID, ShipmentMethod>(ShipmentMethodDataLoader::class.simpleName!!)
             .load(shipmentMethodId, dfe)
+    }
+
+    @GraphQLDescription("The address this shipment is sent to.")
+    fun shipmentAddress(
+        dfe: DataFetchingEnvironment
+    ): CompletableFuture<Address> {
+        return dfe.getDataLoader<UUID, Address>(AddressDataLoader::class.simpleName!!)
+            .load(shipmentAddressId, dfe)
     }
 
     @GraphQLDescription("Get all associated OrderItems")

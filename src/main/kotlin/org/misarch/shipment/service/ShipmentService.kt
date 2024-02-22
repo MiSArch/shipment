@@ -77,7 +77,7 @@ class ShipmentService(
         val shipment = ShipmentEntity(
             status = ShipmentStatus.PENDING,
             shipmentMethodId = input.shipmentMethodId,
-            addressId = input.addressId,
+            shipmentAddressId = input.addressId,
             id = null
         )
         val savedShipment = repository.save(shipment).awaitSingle()
@@ -98,7 +98,7 @@ class ShipmentService(
                 status = savedShipment.status,
                 orderItemIds = input.orderItems.keys.toList(),
                 shipmentMethodId = input.shipmentMethodId,
-                addressId = input.addressId
+                shipmentAddressId = input.addressId
             )
         )
     }
