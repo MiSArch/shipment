@@ -38,7 +38,7 @@ services:
       "--app-id", "shipment",
       "--app-port", "8080",
       "--dapr-http-port", "3500",
-      "-placement-host-shipment", "placement:50006",
+      "-placement-host-address", "placement:50006",
       "--config", "/config.yaml",
       "--resources-path", "/components"
     ]

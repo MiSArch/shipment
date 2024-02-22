@@ -16,7 +16,7 @@ import java.util.*
  */
 @Table
 class ShipmentEntity(
-    val status: ShipmentStatus,
+    var status: ShipmentStatus,
     val shipmentMethodId: UUID,
     val addressId: UUID,
     @Id

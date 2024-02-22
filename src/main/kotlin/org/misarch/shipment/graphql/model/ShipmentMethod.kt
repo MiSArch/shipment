@@ -5,10 +5,9 @@ import com.expediagroup.graphql.generator.annotations.GraphQLIgnore
 import com.expediagroup.graphql.generator.federation.directives.FieldSet
 import com.expediagroup.graphql.generator.federation.directives.KeyDirective
 import graphql.schema.DataFetchingEnvironment
-import kotlinx.coroutines.reactor.awaitSingle
 import org.misarch.shipment.graphql.authorizedUser
-import org.misarch.shipment.graphql.input.CalculateFeesItemInput
-import org.misarch.shipment.persistence.repository.ProductVariantVersionRepository
+import org.misarch.shipment.graphql.input.ProductVariantVersionWithQuantityInput
+import org.misarch.shipment.service.ShipmentMethodService
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.OffsetDateTime
 import java.util.*
@@ -45,17 +44,13 @@ class ShipmentMethod(
     @GraphQLDescription("Calculates the fees for a potential shipment.")
     suspend fun calculateFees(
         @GraphQLDescription("The input for the calculation.")
-        items: List<CalculateFeesItemInput>,
+        items: List<ProductVariantVersionWithQuantityInput>,
         @GraphQLIgnore
         @Autowired
-        productVariantVersionRepository: ProductVariantVersionRepository
+        shipmentMethodService: ShipmentMethodService
     ): Int {
-        val productVariantVersions =
-            productVariantVersionRepository.findAllById(items.map { it.productVariantVersionId }).collectList()
-                .awaitSingle().associateBy { it.id }
-        val weight = items.sumOf { productVariantVersions.getValue(it.productVariantVersionId).weight * it.count }
-        val itemCount = items.sumOf { it.count }
-        return baseFees + (itemCount* feesPerItem) + (weight * feesPerKg).toInt()
+        val (quantity, weight) = shipmentMethodService.calculateQuantityAndWeight(items)
+        return baseFees + (quantity * feesPerItem) + (weight * feesPerKg).toInt()
     }
 
 }

@@ -22,8 +22,7 @@ CREATE TABLE ShipmentMethodEntity (
     baseFees INT NOT NULL,
     feesPerItem INT NOT NULL,
     feesPerKg INT NOT NULL,
-    archivedAt TIMESTAMPTZ NULL,
-    FOREIGN KEY (userId) REFERENCES UserEntity(id)
+    archivedAt TIMESTAMPTZ NULL
 );
 
 CREATE TABLE ShipmentEntity (

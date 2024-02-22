@@ -10,9 +10,14 @@ object ShipmentEvents {
     const val SHIPMENT_CREATED = "shipment/shipment/created"
 
     /**
-     * Topic for shipment state change events (a shipment state has been changed)
+     * Topic for shipment creation failed events (a shipment creation has failed)
      */
-    const val SHIPMENT_STATE_CHANGED = "shipment/shipment/state-changed"
+    const val SHIPMENT_CREATION_FAILED = "shipment/shipment/creation-failed"
+
+    /**
+     * Topic for shipment status update events (a shipment state has been changed)
+     */
+    const val SHIPMENT_STATUS_UPDATED = "shipment/shipment/status-updated"
 
     /**
      * Topic for shipment method creation events (a shipment method has been created)
