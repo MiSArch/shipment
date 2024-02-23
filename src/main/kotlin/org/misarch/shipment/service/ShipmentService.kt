@@ -13,6 +13,7 @@ import org.misarch.shipment.persistence.model.ShipmentEntity
 import org.misarch.shipment.persistence.model.ShipmentMethodEntity
 import org.misarch.shipment.persistence.model.ShipmentToOrderItemEntity
 import org.misarch.shipment.persistence.repository.*
+import org.misarch.shipment.provider.AddressDefinition
 import org.misarch.shipment.provider.ShipmentProviderConfigurationProperties
 import org.misarch.shipment.provider.ShipmentProviderShipmentDefinition
 import org.springframework.stereotype.Service
@@ -118,10 +119,22 @@ class ShipmentService(
                 it.productVariantVersionId, it.quantity
             )
         })
+        val address = addressRepository.findById(input.addressId).awaitSingle()
         val webClient = WebClient.create()
         webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
             ShipmentProviderShipmentDefinition(
-                id = savedShipment.id!!, ref = shipmentMethod.ref, quantity = quantity, weight = weight
+                id = savedShipment.id!!,
+                ref = shipmentMethod.ref,
+                quantity = quantity,
+                weight = weight,
+                address = AddressDefinition(
+                    street1 = address.street1,
+                    street2 = address.street2,
+                    city = address.city,
+                    postalCode = address.postalCode,
+                    country = address.country,
+                    companyName = address.companyName
+                )
             )
         ).retrieve().toBodilessEntity().awaitSingleOrNull()
     }

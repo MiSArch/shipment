@@ -21,12 +21,30 @@ interface AddressRepository : QuerydslR2dbcRepository<AddressEntity, UUID> {
      * @param userId unique identifier of the user, null if the address is a vendor address
      */
     @Modifying
-    @Query("INSERT INTO AddressEntity (id, userId) VALUES (:id, :userId)")
+    @Query(
+        """
+        INSERT INTO AddressEntity
+        (id, userId, street1, street2, city, postalCode, country, companyName)
+        VALUES (:id, :userId, :street1, :street2, :city, :postalCode, :country, :companyName)
+        """
+    )
     suspend fun createAddress(
         @Param("id")
         id: UUID,
         @Param("userId")
-        userId: UUID?
+        userId: UUID?,
+        @Param("street1")
+        street1: String,
+        @Param("street2")
+        street2: String,
+        @Param("city")
+        city: String,
+        @Param("postalCode")
+        postalCode: String,
+        @Param("country")
+        country: String,
+        @Param("companyName")
+        companyName: String?
     )
 
 }

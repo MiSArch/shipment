@@ -15,4 +15,24 @@ data class ShipmentProviderShipmentDefinition(
     val ref: String,
     val quantity: Int,
     val weight: Double,
+    val address: AddressDefinition
+)
+
+/**
+ * Entity for the address definition sent to the shipment provider on shipment creation
+ *
+ * @property street1 first line of the address
+ * @property street2 second line of the address
+ * @property city city of the address
+ * @property postalCode postal code of the address
+ * @property country country of the address
+ * @property companyName name of the company
+ */
+data class AddressDefinition(
+    val street1: String,
+    val street2: String,
+    val city: String,
+    val postalCode: String,
+    val country: String,
+    val companyName: String?
 )

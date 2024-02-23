@@ -2,7 +2,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE AddressEntity (
     id UUID PRIMARY KEY UNIQUE,
-    userId UUID NULL
+    userId UUID NULL,
+    street1 VARCHAR(255) NOT NULL,
+    street2 VARCHAR(255) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    postalCode VARCHAR(255) NOT NULL,
+    country VARCHAR(255) NOT NULL,
+    companyName VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE ProductVariantVersionEntity (
