@@ -43,8 +43,8 @@ class Shipment(
             .load(shipmentAddressId, dfe)
     }
 
-    @GraphQLDescription("Get all associated OrderItems")
-    suspend fun orderItems(
+    @GraphQLDescription("Get all OrderItems sent with this shipment")
+    suspend fun sentItems(
         @GraphQLDescription("Number of items to return")
         first: Int? = null,
         @GraphQLDescription("Number of items to skip")
