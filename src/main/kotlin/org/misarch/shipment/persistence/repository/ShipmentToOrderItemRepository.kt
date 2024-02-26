@@ -9,4 +9,14 @@ import java.util.*
  * Repository for [ShipmentToOrderItemEntity]s
  */
 @Repository
-interface ShipmentToOrderItemRepository : QuerydslR2dbcRepository<ShipmentToOrderItemEntity, UUID>
+interface ShipmentToOrderItemRepository : QuerydslR2dbcRepository<ShipmentToOrderItemEntity, UUID> {
+
+    /**
+     * Finds all [ShipmentToOrderItemEntity]s by the shipment id
+     *
+     * @param shipmentId the shipment id
+     * @return the list of [ShipmentToOrderItemEntity]s
+     */
+    suspend fun findByShipmentId(shipmentId: UUID): List<ShipmentToOrderItemEntity>
+
+}

@@ -24,7 +24,9 @@ class Shipment(
     @property:GraphQLDescription("The status of the shipment.")
     val status: ShipmentStatus,
     private val shipmentMethodId: UUID,
-    private val shipmentAddressId: UUID
+    private val shipmentAddressId: UUID,
+    private val orderID: UUID?,
+    private val returnID: UUID?
 ) : Node(id) {
 
     @GraphQLDescription("The shipment method this shipment uses.")
@@ -41,6 +43,16 @@ class Shipment(
     ): CompletableFuture<Address> {
         return dfe.getDataLoader<UUID, Address>(AddressDataLoader::class.simpleName!!)
             .load(shipmentAddressId, dfe)
+    }
+
+    @GraphQLDescription("The order this shipment is caused by.")
+    fun order(): Order? {
+        return orderID?.let { Order(it) }
+    }
+
+    @GraphQLDescription("The return this shipment is caused by.")
+    fun `return`(): Return? {
+        return returnID?.let { Return(it) }
     }
 
     @GraphQLDescription("Get all OrderItems sent with this shipment")

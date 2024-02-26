@@ -58,7 +58,7 @@ class ShipmentService(
                     orderId = input.orderId,
                     returnId = input.returnId,
                     reason = e.message ?: "Unknown reason",
-                    addressId = input.addressId,
+                    shipmentAddressId = input.addressId,
                     orderItemIds = input.orderItems.keys.toList(),
                     shipmentMethodId = input.shipmentMethodId
                 )
@@ -79,6 +79,8 @@ class ShipmentService(
             status = ShipmentStatus.PENDING,
             shipmentMethodId = input.shipmentMethodId,
             shipmentAddressId = input.addressId,
+            orderId = input.orderId,
+            returnId = input.returnId,
             id = null
         )
         val savedShipment = repository.save(shipment).awaitSingle()
@@ -150,7 +152,14 @@ class ShipmentService(
         shipment.status = status
         repository.save(shipment).awaitSingle()
         eventPublisher.publishEvent(
-            ShipmentEvents.SHIPMENT_STATUS_UPDATED, ShipmentStatusUpdatedDTO(shipmentId, status)
+            ShipmentEvents.SHIPMENT_STATUS_UPDATED,
+            ShipmentStatusUpdatedDTO(
+                id = shipmentId,
+                status = status,
+                orderId = shipment.orderId,
+                returnId = shipment.returnId,
+                orderItemIds = shipmentToOrderItemRepository.findByShipmentId(shipmentId).map { it.orderItemId }
+            )
         )
     }
 

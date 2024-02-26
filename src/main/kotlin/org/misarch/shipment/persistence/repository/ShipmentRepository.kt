@@ -9,4 +9,14 @@ import java.util.*
  * Repository for [ShipmentEntity]s
  */
 @Repository
-interface ShipmentRepository : QuerydslR2dbcRepository<ShipmentEntity, UUID>
+interface ShipmentRepository : QuerydslR2dbcRepository<ShipmentEntity, UUID> {
+
+    /**
+     * Find a [ShipmentEntity] by its return ID.
+     *
+     * @param returnId the return ID
+     * @return the [ShipmentEntity]
+     */
+    suspend fun findByReturnId(returnId: UUID): ShipmentEntity
+
+}

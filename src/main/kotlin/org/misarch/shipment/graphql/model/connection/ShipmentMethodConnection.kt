@@ -7,14 +7,13 @@ import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.core.types.dsl.ComparableExpression
 import com.querydsl.sql.SQLQuery
 import org.misarch.shipment.graphql.AuthorizedUser
-import org.misarch.shipment.graphql.model.Shipment
 import org.misarch.shipment.graphql.model.ShipmentMethod
 import org.misarch.shipment.graphql.model.connection.base.*
 import org.misarch.shipment.persistence.model.ShipmentMethodEntity
 import org.misarch.shipment.persistence.repository.ShipmentMethodRepository
 
 /**
- * A GraphQL connection for [Shipment]s.
+ * A GraphQL connection for [ShipmentMethod]s.
  *
  * @param first The maximum number of items to return
  * @param skip The number of items to skip
@@ -72,6 +71,7 @@ class ShipmentMethodOrder(
 
 @GraphQLDescription("Shipment method filter")
 class ShipmentMethodFilter(
+    @GraphQLDescription("Filter shipment methods by their archived status")
     val isArchived: Boolean?
 ) : BaseFilter {
 

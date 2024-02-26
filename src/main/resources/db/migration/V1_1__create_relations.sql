@@ -36,6 +36,8 @@ CREATE TABLE ShipmentEntity (
     status VARCHAR(255) NOT NULL,
     shipmentMethodId UUID NOT NULL,
     shipmentAddressId UUID NOT NULL,
+    orderId UUID NULL,
+    returnId UUID NULL,
     FOREIGN KEY (shipmentMethodId) REFERENCES ShipmentMethodEntity(id),
     FOREIGN KEY (shipmentAddressId) REFERENCES AddressEntity(id)
 );
