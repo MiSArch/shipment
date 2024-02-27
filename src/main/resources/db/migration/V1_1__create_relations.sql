@@ -16,10 +16,6 @@ CREATE TABLE ProductVariantVersionEntity (
     weight DOUBLE PRECISION NOT NULL
 );
 
-CREATE TABLE OrderItemEntity (
-    id UUID PRIMARY KEY UNIQUE
-);
-
 CREATE TABLE ShipmentMethodEntity (
     id UUID PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
@@ -40,6 +36,12 @@ CREATE TABLE ShipmentEntity (
     returnId UUID NULL,
     FOREIGN KEY (shipmentMethodId) REFERENCES ShipmentMethodEntity(id),
     FOREIGN KEY (shipmentAddressId) REFERENCES AddressEntity(id)
+);
+
+CREATE TABLE OrderItemEntity (
+    id UUID PRIMARY KEY UNIQUE,
+    sentWithId UUID NOT NULL,
+    FOREIGN KEY (sentWithId) REFERENCES ShipmentEntity(id)
 );
 
 CREATE TABLE ShipmentToOrderItemEntity (

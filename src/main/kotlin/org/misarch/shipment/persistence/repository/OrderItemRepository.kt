@@ -19,12 +19,15 @@ interface OrderItemRepository : QuerydslR2dbcRepository<OrderItemEntity, UUID> {
      * If the order item already exists, do nothing.
      *
      * @param id unique identifier of the order item
+     * @param sentWithId unique identifier of the shipment the order item was sent with originally
      */
     @Modifying
-    @Query("INSERT INTO OrderItemEntity (id) VALUES (:id) ON CONFLICT DO NOTHING")
+    @Query("INSERT INTO OrderItemEntity (id, sentWidthId) VALUES (:id, :sentWithId) ON CONFLICT DO NOTHING")
     suspend fun createOrderItem(
         @Param("id")
-        id: UUID
+        id: UUID,
+        @Param("sentWithId")
+        sentWithId: UUID
     )
 
 }

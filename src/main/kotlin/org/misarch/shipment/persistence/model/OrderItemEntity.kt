@@ -8,10 +8,12 @@ import java.util.*
 /**
  * Entity for order items
  *
+ * @param sentWithId unique identifier of the shipment the order item was sent with originally
  * @property id unique identifier of the order item
  */
 @Table
 class OrderItemEntity(
+    val sentWithId: UUID,
     @Id
     override val id: UUID
 ) : BaseEntity<OrderItem> {
@@ -24,6 +26,6 @@ class OrderItemEntity(
     }
 
     override fun toDTO(): OrderItem {
-        return OrderItem(id = id)
+        return OrderItem(id = id, sentWithId = sentWithId)
     }
 }

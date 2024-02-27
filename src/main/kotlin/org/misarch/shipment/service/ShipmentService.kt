@@ -85,10 +85,10 @@ class ShipmentService(
         )
         val savedShipment = repository.save(shipment).awaitSingle()
         input.orderItems.keys.forEach { orderItemId ->
-            orderItemRepository.createOrderItem(orderItemId)
+            orderItemRepository.createOrderItem(orderItemId, savedShipment.id!!)
             shipmentToOrderItemRepository.save(
                 ShipmentToOrderItemEntity(
-                    shipmentId = savedShipment.id!!, orderItemId = orderItemId, id = null
+                    shipmentId = savedShipment.id, orderItemId = orderItemId, id = null
                 )
             ).awaitSingle()
         }
