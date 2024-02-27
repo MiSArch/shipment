@@ -16,9 +16,12 @@ class OrderItem(
 ) : Node(id) {
 
     @GraphQLDescription("The shipment this order item was originally sent with.")
-    fun shipmentAddress(
+    fun sentWith(
         dfe: DataFetchingEnvironment
-    ): CompletableFuture<Shipment> {
+    ): CompletableFuture<Shipment?> {
+        if (sentWithId == null) {
+            return CompletableFuture.completedFuture(null)
+        }
         return dfe.getDataLoader<UUID, Shipment>(ShipmentDataLoader::class.simpleName!!)
             .load(sentWithId, dfe)
     }
