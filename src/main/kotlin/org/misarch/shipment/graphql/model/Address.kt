@@ -4,4 +4,7 @@ import com.expediagroup.graphql.generator.annotations.GraphQLDescription
 import java.util.*
 
 @GraphQLDescription("An item in an order.")
-abstract class Address(id: UUID) : Node(id)
+abstract class Address(
+    @property:GraphQLDescription("The ID of the node.")
+    val id: UUID
+)
