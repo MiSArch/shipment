@@ -45,9 +45,9 @@ object ShipmentEvents {
     const val PRODUCT_VARIANT_VERSION_CREATED = "product/product-variant-version/created"
 
     /**
-     * Topic for discount service order validation successful events
+     * Topic for payment enabled events (payment has been enabled by the payment service)
      */
-    const val ORDER_VALIDATION_SUCCESSFUL = "discount/order/validation-successful"
+    const val PAYMENT_ENABLED = "payment/payment/payment-enabled"
 
     /**
      * Name of the pubsub component

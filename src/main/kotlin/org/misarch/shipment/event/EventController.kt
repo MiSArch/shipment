@@ -2,13 +2,17 @@ package org.misarch.shipment.event
 
 import io.dapr.Topic
 import io.dapr.client.domain.CloudEvent
+import org.misarch.shipment.event.model.PaymentEnabledDTO
 import org.misarch.shipment.event.model.ProductVariantVersionDTO
 import org.misarch.shipment.event.model.UserAddressDTO
 import org.misarch.shipment.event.model.VendorAddressDTO
 import org.misarch.shipment.service.AddressService
 import org.misarch.shipment.service.ProductVariantVersionService
+import org.misarch.shipment.service.ShipmentService
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.ResponseStatus
@@ -18,11 +22,13 @@ import org.springframework.web.bind.annotation.ResponseStatus
  *
  * @param addressService the user service
  * @param productVariantVersionService the product variant version service
+ * @param shipmentService the shipment service
  */
 @Controller
 class EventController(
     private val addressService: AddressService,
-    private val productVariantVersionService: ProductVariantVersionService
+    private val productVariantVersionService: ProductVariantVersionService,
+    private val shipmentService: ShipmentService
 ) {
 
     /**
@@ -68,6 +74,22 @@ class EventController(
         cloudEvent: CloudEvent<ProductVariantVersionDTO>
     ) {
         productVariantVersionService.registerProductVariantVersion(cloudEvent.data)
+    }
+
+    /**
+     * Handles a payment enabled event
+     *
+     * @param cloudEvent the cloud event containing the order for which payment has been enabled
+     */
+    @Topic(name = ShipmentEvents.PAYMENT_ENABLED, pubsubName = ShipmentEvents.PUBSUB_NAME)
+    @PostMapping("/subscription/${ShipmentEvents.PAYMENT_ENABLED}")
+    @ResponseStatus(code = HttpStatus.OK)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    suspend fun onPaymentEnabled(
+        @RequestBody
+        cloudEvent: CloudEvent<PaymentEnabledDTO>
+    ) {
+        TODO("Need to wait how the order will look like exactly")
     }
 
 }
