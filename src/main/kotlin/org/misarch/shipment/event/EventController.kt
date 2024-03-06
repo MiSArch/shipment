@@ -6,7 +6,9 @@ import org.misarch.shipment.event.model.PaymentEnabledDTO
 import org.misarch.shipment.event.model.ProductVariantVersionDTO
 import org.misarch.shipment.event.model.UserAddressDTO
 import org.misarch.shipment.event.model.VendorAddressDTO
+import org.misarch.shipment.graphql.input.ProductVariantVersionWithQuantityInput
 import org.misarch.shipment.service.AddressService
+import org.misarch.shipment.service.CreateShipmentInput
 import org.misarch.shipment.service.ProductVariantVersionService
 import org.misarch.shipment.service.ShipmentService
 import org.springframework.http.HttpStatus
@@ -89,7 +91,23 @@ class EventController(
         @RequestBody
         cloudEvent: CloudEvent<PaymentEnabledDTO>
     ) {
-        TODO("Need to wait how the order will look like exactly")
+        val order = cloudEvent.data.order
+        val groupedOrderItems = order.orderItems.groupBy { it.shipment.shipmentMethodId }
+        for ((shipmentMethodId, orderItems) in groupedOrderItems) {
+            shipmentService.createShipment(
+                CreateShipmentInput(
+                    orderId = order.id,
+                    returnId = null,
+                    shipmentMethodId = shipmentMethodId,
+                    addressId = order.shipmentAddressId,
+                    orderItems = orderItems.associate {
+                        it.id to ProductVariantVersionWithQuantityInput(
+                            it.productVariantVersionId, it.count.toInt()
+                        )
+                    }
+                )
+            )
+        }
     }
 
 }
