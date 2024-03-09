@@ -1,6 +1,6 @@
 #/bin/bash
 
-./gradlew bootRun --args="--spring.flyway.enabled=false --spring.profiles.active=dev" --no-daemon &
+./gradlew bootRun --args="--spring.flyway.enabled=false --spring.profiles.active=dev --misarch.shipment.provider.endpoint=http://localhost/does-not-exist" --no-daemon &
 gradlew_pid=$!
 schema_endpoint="http://localhost:8080/sdl"
 c=0
