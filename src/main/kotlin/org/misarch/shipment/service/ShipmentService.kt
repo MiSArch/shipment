@@ -126,7 +126,7 @@ class ShipmentService(
         webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
             ShipmentProviderShipmentDefinition(
                 id = savedShipment.id!!,
-                ref = shipmentMethod.ref,
+                ref = shipmentMethod.externalReference,
                 quantity = quantity,
                 weight = weight,
                 address = AddressDefinition(

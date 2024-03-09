@@ -9,7 +9,7 @@ class CreateShipmentMethodInput(
     @property:GraphQLDescription("The description of the shipment method.")
     val description: String,
     @property:GraphQLDescription("The reference of the shipment method used by the external shipment provider.")
-    val ref: String,
+    val externalReference: String,
     @property:GraphQLDescription("The base fees for the shipment method.")
     val baseFees: Int,
     @property:GraphQLDescription("The fees per item for the shipment method.")

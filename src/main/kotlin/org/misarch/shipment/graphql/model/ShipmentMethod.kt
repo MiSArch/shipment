@@ -27,7 +27,7 @@ class ShipmentMethod(
     @property:GraphQLDescription("The fees per kg for the shipment method.")
     val feesPerKg: Int,
     @property:GraphQLDescription("If this shipment method is archived, the datetime it was archived.")
-    val archivedAt: OffsetDateTime?, private val ref: String
+    val archivedAt: OffsetDateTime?, private val externalReference: String
 ) : Node(id) {
 
     @GraphQLDescription("If true, this shipment method is archived and can no longer be used.")
@@ -36,9 +36,9 @@ class ShipmentMethod(
 
 
     @GraphQLDescription("The reference of the shipment method used by the external shipment provider.")
-    fun ref(dfe: DataFetchingEnvironment): String {
+    fun externalReference(dfe: DataFetchingEnvironment): String {
         dfe.authorizedUser.checkIsEmployee()
-        return ref
+        return externalReference
     }
 
     @GraphQLDescription("Calculates the fees for a potential shipment.")

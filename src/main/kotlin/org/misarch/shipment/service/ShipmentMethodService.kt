@@ -43,7 +43,7 @@ class ShipmentMethodService(
             baseFees = shipmentMethodInput.baseFees,
             feesPerItem = shipmentMethodInput.feesPerItem,
             feesPerKg = shipmentMethodInput.feesPerKg,
-            ref = shipmentMethodInput.ref,
+            externalReference = shipmentMethodInput.externalReference,
             id = null,
             archivedAt = null
         )

@@ -20,7 +20,7 @@ CREATE TABLE ShipmentMethodEntity (
     id UUID PRIMARY KEY UNIQUE DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
-    ref VARCHAR(255) NOT NULL,
+    externalReference VARCHAR(255) NOT NULL,
     baseFees INT NOT NULL,
     feesPerItem INT NOT NULL,
     feesPerKg INT NOT NULL,
