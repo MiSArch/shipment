@@ -45,12 +45,12 @@ class Shipment(
             .load(shipmentAddressId, dfe)
     }
 
-    @GraphQLDescription("The order this shipment is caused by.")
+    @GraphQLDescription("The order creating this shipment.")
     fun order(): Order? {
         return orderID?.let { Order(it) }
     }
 
-    @GraphQLDescription("The return this shipment is caused by.")
+    @GraphQLDescription("The product return causing this shipment.")
     fun `return`(): Return? {
         return returnID?.let { Return(it) }
     }
