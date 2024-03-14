@@ -17,7 +17,7 @@ class OrderItemResolver(
     private val orderItemRepository: OrderItemRepository
 ) : FederatedTypeSuspendResolver<OrderItem> {
     override val typeName: String
-        get() = Shipment::class.simpleName!!
+        get() = OrderItem::class.simpleName!!
 
     override suspend fun resolve(
         environment: DataFetchingEnvironment, representation: Map<String, Any>
