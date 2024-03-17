@@ -42,7 +42,7 @@ object ShipmentEvents {
     /**
      * Topic for product variant version creation events (a product variant version has been created)
      */
-    const val PRODUCT_VARIANT_VERSION_CREATED = "product/product-variant-version/created"
+    const val PRODUCT_VARIANT_VERSION_CREATED = "catalog/product-variant-version/created"
 
     /**
      * Topic for payment enabled events (payment has been enabled by the payment service)
