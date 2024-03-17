@@ -52,7 +52,7 @@ class Query(
         return dfe.getDataLoader<UUID, ShipmentMethod>(ShipmentMethodDataLoader::class.simpleName!!).load(id)
     }
 
-    @GraphQLDescription("Calculates the fees for a collection of shipped items.")
+    @GraphQLDescription("Calculates the fees for a collection of shipped items. Should only be called by the Order service")
     @InaccessibleDirective
     suspend fun calculateShipmentFees(
         @GraphQLDescription("The input for the calculateShipmentFees query.")
