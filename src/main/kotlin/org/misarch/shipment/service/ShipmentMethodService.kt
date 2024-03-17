@@ -5,6 +5,7 @@ import org.misarch.shipment.event.EventPublisher
 import org.misarch.shipment.event.ShipmentEvents
 import org.misarch.shipment.event.model.ArchiveShipmentMethodDTO
 import org.misarch.shipment.graphql.input.ArchiveShipmentMethodInput
+import org.misarch.shipment.graphql.input.CalculateShipmentFeesInput
 import org.misarch.shipment.graphql.input.CreateShipmentMethodInput
 import org.misarch.shipment.graphql.input.ProductVariantVersionWithQuantityInput
 import org.misarch.shipment.persistence.model.ShipmentMethodEntity
@@ -69,6 +70,29 @@ class ShipmentMethodService(
     }
 
     /**
+     * Calculates the shipment fees for a collection of items
+     *
+     * @param input the input for the calculation
+     * @return the calculated shipment fees
+     */
+    suspend fun calculateShipmentFees(input: CalculateShipmentFeesInput): Int {
+        val groupedProductVariantWithQuantity = input.items.groupBy { it.shipmentMethodId }
+        val shipmentMethodsById = repository.findAllById(groupedProductVariantWithQuantity.keys).collectList()
+            .awaitSingle()
+            .associateBy { it.id }
+        require(groupedProductVariantWithQuantity.keys.all { it in shipmentMethodsById }) {
+            "Not all shipment methods are valid"
+        }
+        return groupedProductVariantWithQuantity.map { (shipmentMethodId, items) ->
+            val shipmentMethod = shipmentMethodsById.getValue(shipmentMethodId)
+            val (quantity, weight) = calculateQuantityAndWeight(items)
+            shipmentMethod.run {
+                baseFees + (quantity * feesPerItem) + (weight * feesPerKg).toInt()
+            }
+        }.sum()
+    }
+
+    /**
      * Calculates the quantity and weight of a (potential) shipment
      *
      * @param items the items to calculate the quantity and weight for
@@ -77,9 +101,13 @@ class ShipmentMethodService(
     suspend fun calculateQuantityAndWeight(
         items: List<ProductVariantVersionWithQuantityInput>,
     ): QuantityAndWeight {
+        require(items.all { it.quantity > 0 }) { "Quantity must be greater than 0" }
         val productVariantVersions =
             productVariantVersionRepository.findAllById(items.map { it.productVariantVersionId }).collectList()
                 .awaitSingle().associateBy { it.id }
+        require(items.all { it.productVariantVersionId in productVariantVersions }) {
+            "Not all product variant versions are valid"
+        }
         val weight = items.sumOf { productVariantVersions.getValue(it.productVariantVersionId).weight * it.quantity }
         val totalQuantity = items.sumOf { it.quantity }
         return QuantityAndWeight(totalQuantity, weight)
