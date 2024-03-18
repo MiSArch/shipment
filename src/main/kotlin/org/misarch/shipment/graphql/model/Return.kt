@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
 
 @GraphQLDescription("A return one or more OrderItems.")
-@KeyDirective(fields = FieldSet("id"), resolvable = false)
+@KeyDirective(fields = FieldSet("id"))
 class Return(
     id: UUID
 ) : Node(id) {
