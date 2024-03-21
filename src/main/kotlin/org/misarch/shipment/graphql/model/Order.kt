@@ -21,7 +21,7 @@ class Order(
 ) : Node(id) {
 
     @GraphQLDescription("Get all associated Shipments")
-    suspend fun variants(
+    suspend fun shipments(
         @GraphQLDescription("Number of items to return")
         first: Int? = null,
         @GraphQLDescription("Number of items to skip")
