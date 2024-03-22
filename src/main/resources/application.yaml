@@ -1,11 +1,12 @@
 spring:
   main:
     allow-bean-definition-overriding: true
-  r2dbc:
-    url: r2dbc:postgresql://shipment-db:5432/shipment
   flyway:
-    url: jdbc:postgresql://shipment-db:5432/shipment
     locations: classpath:db/migration
+management:
+  endpoints:
+    web:
+      base-path: /
 graphql:
   packages: org.misarch.shipment
   federation:
