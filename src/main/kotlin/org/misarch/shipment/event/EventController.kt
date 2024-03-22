@@ -92,7 +92,7 @@ class EventController(
         cloudEvent: CloudEvent<PaymentEnabledDTO>
     ) {
         val order = cloudEvent.data.order
-        val groupedOrderItems = order.orderItems.groupBy { it.shipment.shipmentMethodId }
+        val groupedOrderItems = order.orderItems.groupBy { it.shipmentMethodId }
         for ((shipmentMethodId, orderItems) in groupedOrderItems) {
             shipmentService.createShipment(
                 CreateShipmentInput(
