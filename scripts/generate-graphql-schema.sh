@@ -1,6 +1,13 @@
 #/bin/bash
 
-./gradlew bootRun --args="--spring.flyway.enabled=false --spring.profiles.active=dev --misarch.shipment.provider.endpoint=http://localhost/does-not-exist" --no-daemon &
+export SPRING_R2DBC_URL=r2dbc:postgresql://localhost
+export SPRING_FLYWAY_URL=jdbc:postgresql://localhost
+export SPRING_R2DBC_USERNAME=postgres
+export SPRING_R2DBC_PASSWORD=postgres
+export SPRING_FLYWAY_ENABLED=false
+
+./gradlew bootRun --no-daemon &
+./gradlew bootRun --args="--misarch.shipment.provider.endpoint=http://localhost/does-not-exist" --no-daemon &
 gradlew_pid=$!
 schema_endpoint="http://localhost:8080/sdl"
 c=0
