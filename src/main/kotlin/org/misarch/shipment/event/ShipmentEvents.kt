@@ -49,6 +49,8 @@ object ShipmentEvents {
      */
     const val PAYMENT_ENABLED = "payment/payment/payment-enabled"
 
+    const val RETURN_CREATED = "return/return/created"
+
     /**
      * Name of the pubsub component
      */

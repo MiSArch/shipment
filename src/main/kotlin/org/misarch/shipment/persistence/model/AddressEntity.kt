@@ -28,6 +28,7 @@ class AddressEntity(
     val country: String,
     val companyName: String?,
     val userId: UUID?,
+    val version: Long?,
     @Id
     override val id: UUID
 ) : BaseEntity<Address> {
