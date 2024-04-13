@@ -2,10 +2,7 @@ package org.misarch.shipment.event
 
 import io.dapr.Topic
 import io.dapr.client.domain.CloudEvent
-import org.misarch.shipment.event.model.PaymentEnabledDTO
-import org.misarch.shipment.event.model.ProductVariantVersionDTO
-import org.misarch.shipment.event.model.UserAddressDTO
-import org.misarch.shipment.event.model.VendorAddressDTO
+import org.misarch.shipment.event.model.*
 import org.misarch.shipment.graphql.input.ProductVariantVersionWithQuantityInput
 import org.misarch.shipment.service.AddressService
 import org.misarch.shipment.service.CreateShipmentInput
@@ -91,23 +88,23 @@ class EventController(
         @RequestBody
         cloudEvent: CloudEvent<PaymentEnabledDTO>
     ) {
-        val order = cloudEvent.data.order
-        val groupedOrderItems = order.orderItems.groupBy { it.shipmentMethodId }
-        for ((shipmentMethodId, orderItems) in groupedOrderItems) {
-            shipmentService.createShipment(
-                CreateShipmentInput(
-                    orderId = order.id,
-                    returnId = null,
-                    shipmentMethodId = shipmentMethodId,
-                    addressId = order.shipmentAddressId,
-                    orderItems = orderItems.associate {
-                        it.id to ProductVariantVersionWithQuantityInput(
-                            it.productVariantVersionId, it.count.toInt()
-                        )
-                    }
-                )
-            )
-        }
+        shipmentService.createShipmentForOrder(cloudEvent.data)
+    }
+
+    /**
+     * Handles a return created event
+     *
+     * @param cloudEvent the cloud event containing the return for which a shipment has been created
+     */
+    @Topic(name = ShipmentEvents.RETURN_CREATED, pubsubName = ShipmentEvents.PUBSUB_NAME)
+    @PostMapping("/subscription/${ShipmentEvents.RETURN_CREATED}")
+    @ResponseStatus(code = HttpStatus.OK)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    suspend fun onReturnCreated(
+        @RequestBody
+        cloudEvent: CloudEvent<ReturnDTO>
+    ) {
+        shipmentService.createShipmentForReturn(cloudEvent.data)
     }
 
 }

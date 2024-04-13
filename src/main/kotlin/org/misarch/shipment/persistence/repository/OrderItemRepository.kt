@@ -22,12 +22,21 @@ interface OrderItemRepository : QuerydslR2dbcRepository<OrderItemEntity, UUID> {
      * @param sentWithId unique identifier of the shipment the order item was sent with originally
      */
     @Modifying
-    @Query("INSERT INTO OrderItemEntity (id, sentWithId) VALUES (:id, :sentWithId) ON CONFLICT DO NOTHING")
+    @Query(
+        """
+        INSERT INTO OrderItemEntity (id, sentWithId, productVariantVersionId, quantity)
+        VALUES (:id, :sentWithId, :productVariantVersionId, :quantity) ON CONFLICT DO NOTHING
+        """
+    )
     suspend fun createOrderItem(
         @Param("id")
         id: UUID,
         @Param("sentWithId")
-        sentWithId: UUID
+        sentWithId: UUID,
+        @Param("productVariantVersionId")
+        productVariantVersionId: UUID,
+        @Param("quantity")
+        quantity: Int
     )
 
 }
