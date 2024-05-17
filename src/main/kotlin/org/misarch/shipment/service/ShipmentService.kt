@@ -172,7 +172,7 @@ class ShipmentService(
         val webClient = WebClient.create()
         webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
             ShipmentProviderShipmentDefinition(
-                id = savedShipment.id!!,
+                shipmentId = savedShipment.id!!,
                 ref = shipmentMethod.externalReference,
                 quantity = quantity,
                 weight = weight,
