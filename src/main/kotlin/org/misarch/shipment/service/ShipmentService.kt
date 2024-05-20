@@ -1,7 +1,9 @@
 package org.misarch.shipment.service
 
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.reactor.awaitSingle
 import kotlinx.coroutines.reactor.awaitSingleOrNull
+import org.misarch.shipment.ecs.ExperimentConfigService
 import org.misarch.shipment.event.EventPublisher
 import org.misarch.shipment.event.ShipmentEvents
 import org.misarch.shipment.event.model.*
@@ -14,7 +16,10 @@ import org.misarch.shipment.persistence.repository.*
 import org.misarch.shipment.provider.AddressDefinition
 import org.misarch.shipment.provider.ShipmentProviderConfigurationProperties
 import org.misarch.shipment.provider.ShipmentProviderShipmentDefinition
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.*
 
@@ -28,6 +33,7 @@ import java.util.*
  * @param shipmentMethodRepository used for getting the shipment method
  * @property eventPublisher the event publisher
  * @property shipmentProviderConfigurationProperties the configuration properties for the external shipment provider
+ * @property experimentConfigService the experiment configuration service providing configuration values
  */
 @Service
 class ShipmentService(
@@ -38,8 +44,14 @@ class ShipmentService(
     private val shipmentMethodRepository: ShipmentMethodRepository,
     private val shipmentMethodService: ShipmentMethodService,
     private val eventPublisher: EventPublisher,
-    private val shipmentProviderConfigurationProperties: ShipmentProviderConfigurationProperties
+    private val shipmentProviderConfigurationProperties: ShipmentProviderConfigurationProperties,
+    private val experimentConfigService: ExperimentConfigService
 ) : BaseService<ShipmentEntity, ShipmentRepository>(repository) {
+
+    /**
+     * Logger to use for this service
+     */
+    private val logger = LoggerFactory.getLogger(ShipmentService::class.java)
 
     /**
      * Create a shipment for an order and publishes a `shipment/shipment/created` event on success.
@@ -132,13 +144,11 @@ class ShipmentService(
         )
         val savedShipment = repository.save(shipment).awaitSingle()
         initOrderItems(input.orderItems, savedShipment.id!!)
-        input.orderItems.forEach {
-            shipmentToOrderItemRepository.save(
-                ShipmentToOrderItemEntity(
-                    shipmentId = savedShipment.id, orderItemId = it.id, id = null
-                )
-            ).awaitSingle()
-        }
+        shipmentToOrderItemRepository.saveAll(input.orderItems.map {
+            ShipmentToOrderItemEntity(
+                shipmentId = savedShipment.id, orderItemId = it.id, id = null
+            )
+        }).collectList().awaitSingle()
         sendShipmentToExternalProvider(input, savedShipment, shipmentMethod)
         eventPublisher.publishEvent(
             ShipmentEvents.SHIPMENT_CREATED, ShipmentDTO(
@@ -170,21 +180,46 @@ class ShipmentService(
         })
         val address = addressRepository.findById(input.addressId).awaitSingle()
         val webClient = WebClient.create()
-        webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
-            ShipmentProviderShipmentDefinition(
-                shipmentId = savedShipment.id!!,
-                ref = shipmentMethod.externalReference,
-                quantity = quantity,
-                weight = weight,
-                address = AddressDefinition(
-                    street1 = address.street1,
-                    street2 = address.street2,
-                    city = address.city,
-                    postalCode = address.postalCode,
-                    country = address.country,
-                    companyName = address.companyName
-                )
+        val shipmentDefinition = ShipmentProviderShipmentDefinition(
+            shipmentId = savedShipment.id!!,
+            ref = shipmentMethod.externalReference,
+            quantity = quantity,
+            weight = weight,
+            address = AddressDefinition(
+                street1 = address.street1,
+                street2 = address.street2,
+                city = address.city,
+                postalCode = address.postalCode,
+                country = address.country,
+                companyName = address.companyName
             )
+        )
+        sendShipmentToExternalProviderWithRetries(webClient, shipmentDefinition)
+    }
+
+    /**
+     * Sends a shipment to an external provider with retries
+     *
+     * @param webClient the web client to use
+     * @param shipmentDefinition the shipment definition to send
+     */
+    private suspend fun sendShipmentToExternalProviderWithRetries(
+        webClient: WebClient,
+        shipmentDefinition: ShipmentProviderShipmentDefinition
+    ) {
+        repeat(experimentConfigService.providerRetries) {
+            try {
+                webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
+                    shipmentDefinition
+                ).retrieve().toBodilessEntity().awaitSingleOrNull()
+                return
+            } catch (e: Exception) {
+                logger.error("Failed to send shipment to external provider, retry", e)
+                delay(experimentConfigService.providerRetryDelay.toLong())
+            }
+        }
+        webClient.post().uri(shipmentProviderConfigurationProperties.endpoint).bodyValue(
+            shipmentDefinition
         ).retrieve().toBodilessEntity().awaitSingleOrNull()
     }
 
